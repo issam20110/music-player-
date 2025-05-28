@@ -1,0 +1,145 @@
+int[][] board = {
+  {0, 0, 0},
+  {0, 0, 0},
+  {0, 0, 0}
+}; // 0 = empty, 1 = X, 2 = O
+int currentPlayer = 1; // 1 = X, 2 = O
+boolean gameOver = false;
+
+// Score variables
+int scoreX = 0;
+int scoreO = 0;
+int tieCount = 0; // Tie count variable
+
+void setup() {
+  size(400, 500); // Increase height to make room for the reset button
+  textAlign(CENTER, CENTER);
+  textSize(32);
+}
+
+void draw() {
+  background(0); // Black background for the main game
+
+  // Draw the scoreboard box
+  fill(128, 0, 128); // Purple color for the scoreboard
+  rect(0, 0, width, 50); // Scoreboard area at the top
+  fill(255); // White text color for the scores
+  textSize(20);
+  text("Player X: " + scoreX, width / 4, 25);
+  text("Ties: " + tieCount, width / 2, 25); // Display tie count in the center
+  text("Player O: " + scoreO, 3 * width / 4, 25);
+
+  // Draw the grid
+  stroke(255); // White grid lines
+  for (int i = 1; i < 3; i++) {
+    line(i * width / 3, 50, i * width / 3, height - 100); // Adjust grid to start below scoreboard
+    line(0, i * (height - 150) / 3 + 50, width, i * (height - 150) / 3 + 50);
+  }
+
+  // Draw the board
+  fill(255); // White color for X and O
+  for (int row = 0; row < 3; row++) {
+    for (int col = 0; col < 3; col++) {
+      float x = col * width / 3 + width / 6;
+      float y = row * (height - 150) / 3 + 50 + (height - 150) / 6;
+      if (board[row][col] == 1) {
+        text("X", x, y); // White X
+      } else if (board[row][col] == 2) {
+        text("O", x, y); // White O
+      }
+    }
+  }
+
+  // Draw the reset button
+  fill(180);
+  rect(width / 2 - 75, height - 75, 150, 50); // Button rectangle
+  fill(0);
+  textSize(20);
+  text("Reset", width / 2, height - 50); // Button text
+
+  // Check for a winner
+  int winner = checkWinner();
+  if (winner != 0) {
+    gameOver = true;
+    fill(255); // White text for winner message
+    textSize(24);
+    text("Player " + winner + " Wins!", width / 2, height - 150);
+    return; // Stop further drawing but allow interaction
+  } else if (isBoardFull()) {
+    gameOver = true;
+    fill(255); // White text for draw message
+    textSize(24);
+    text("It's a Draw!", width / 2, height - 150);
+    tieCount++; // Increment tie count
+    return; // Stop further drawing but allow interaction
+  }
+}
+
+void mousePressed() {
+  // Check if the reset button is clicked
+  if (mouseX > width / 2 - 75 && mouseX < width / 2 + 75 && mouseY > height - 75 && mouseY < height - 25) {
+    resetGame(); // Reset the game
+    return;
+  }
+
+  if (gameOver) return; // Prevent interaction if the game is over
+
+  int col = mouseX / (width / 3);
+  int row = (mouseY - 50) / ((height - 150) / 3); // Adjust for scoreboard height
+
+  if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == 0) {
+    board[row][col] = currentPlayer;
+    currentPlayer = currentPlayer == 1 ? 2 : 1; // Switch player
+  }
+}
+
+void keyPressed() {
+  if (key == 'R' || key == 'r') {
+    resetGame(); // Reset the game using the keyboard
+  }
+}
+
+void resetGame() {
+  // Clear the board and reset variables
+  for (int row = 0; row < 3; row++) {
+    for (int col = 0; col < 3; col++) {
+      board[row][col] = 0;
+    }
+  }
+  currentPlayer = 1; // Reset to Player X
+  gameOver = false;
+  loop(); // Restart the game loop
+}
+
+int checkWinner() {
+  // Check rows and columns
+  for (int i = 0; i < 3; i++) {
+    if (board[i][0] != 0 && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+      return board[i][0];
+    }
+    if (board[0][i] != 0 && board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
+      return board[0][i];
+    }
+  }
+
+  // Check diagonals
+  if (board[0][0] != 0 && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+    return board[0][0];
+  }
+  if (board[0][2] != 0 && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+    return board[0][2];
+  }
+
+  return 0; // No winner
+}
+
+boolean isBoardFull() {
+  for (int row = 0; row < 3; row++) {
+    for (int col = 0; col < 3; col++) {
+      if (board[row][col] == 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
