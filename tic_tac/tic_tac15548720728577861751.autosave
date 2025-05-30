@@ -18,7 +18,7 @@ void setup() {
 }
 
 void draw() {
-  background(#0D46B4); // Blue background for the main game
+  background(0); // Blue background for the main game
 
   // Draw the scoreboard box
   fill(128, 0, 128); // Purple color for the scoreboard
@@ -28,34 +28,6 @@ void draw() {
   text("Player X: " + scoreX, width / 4, 25);
   text("Ties: " + tieCount, width / 2, 25); // Display tie count in the center
   text("Player O: " + scoreO, 3 * width / 4, 25);
-
-  // Draw the grid
-  stroke(255); // White grid lines
-  for (int i = 1; i < 3; i++) {
-    line(i * width / 3, 50, i * width / 3, height - 100); // Adjust grid to start below scoreboard
-    line(0, i * (height - 150) / 3 + 50, width, i * (height - 150) / 3 + 50);
-  }
-
-  // Draw the board
-  fill(255); // White color for X and O
-  for (int row = 0; row < 3; row++) {
-    for (int col = 0; col < 3; col++) {
-      float x = col * width / 3 + width / 6;
-      float y = row * (height - 150) / 3 + 50 + (height - 150) / 6;
-      if (board[row][col] == 1) {
-        text("X", x, y); // White X
-      } else if (board[row][col] == 2) {
-        text("O", x, y); // White O
-      }
-    }
-  }
-
-  // Draw the reset button
-  fill(180);
-  rect(width / 2 - 75, height - 75, 150, 50); // Button rectangle
-  fill(0);
-  textSize(20);
-  text("Reset", width / 2, height - 50); // Button text
 
   // Check for a winner
   int winner = checkWinner();
