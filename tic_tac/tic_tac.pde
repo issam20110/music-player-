@@ -18,7 +18,7 @@ void setup() {
 }
 
 void draw() {
-  background(0); // Black background for the main game
+  background(0); // Blue background for the main game
 
   // Draw the scoreboard box
   fill(128, 0, 128); // Purple color for the scoreboard
