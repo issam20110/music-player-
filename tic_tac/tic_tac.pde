@@ -1,15 +1,11 @@
-int[][] board = {
-  {0, 0, 0},
-  {0, 0, 0},
-  {0, 0, 0}
-}; // 0 = empty, 1 = X, 2 = O
+String[] board = {"", "", "", "", "", "", "", "", ""}; // Empty board
 int currentPlayer = 1; // 1 = X, 2 = O
 boolean gameOver = false;
 
 // Score variables
 int scoreX = 0;
 int scoreO = 0;
-int tieCount = 0; // Tie count variable
+int tieCount = 0;
 
 void setup() {
   size(400, 500); // Increase height to make room for the reset button
@@ -19,33 +15,32 @@ void setup() {
 
 void draw() {
   background(0, 0, 255); // Blue background for the main game
+
   // Draw the scoreboard box
   fill(128, 0, 128); // Purple color for the scoreboard
   rect(0, 0, width, 50); // Scoreboard area at the top
   fill(255); // White text color for the scores
   textSize(20);
   text("Player X: " + scoreX, width / 4, 25);
-  text("Ties: " + tieCount, width / 2, 25); // Display tie count in the center
+  text("Ties: " + tieCount, width / 2, 25);
   text("Player O: " + scoreO, 3 * width / 4, 25);
 
   // Draw the grid
   stroke(255); // White grid lines
   for (int i = 1; i < 3; i++) {
-    line(i * width / 3, 50, i * width / 3, height - 100); // Adjust grid to start below scoreboard
-    line(0, i * (height - 150) / 3 + 50, width, i * (height - 150) / 3 + 50);
+    line(i * width / 3, 50, i * width / 3, height - 100); // Vertical lines
+    line(0, i * (height - 150) / 3 + 50, width, i * (height - 150) / 3 + 50); // Horizontal lines
   }
 
   // Draw the board
   fill(255); // White color for X and O
-  for (int row = 0; row < 3; row++) {
-    for (int col = 0; col < 3; col++) {
-      float x = col * width / 3 + width / 6;
-      float y = row * (height - 150) / 3 + 50 + (height - 150) / 6;
-      if (board[row][col] == 1) {
-        text("X", x, y); // White X
-      } else if (board[row][col] == 2) {
-        text("O", x, y); // White O
-      }
+  for (int i = 0; i < 9; i++) {
+    float x = (i % 3) * width / 3 + width / 6;
+    float y = (i / 3) * (height - 150) / 3 + 50 + (height - 150) / 6;
+    if (board[i].equals("X")) {
+      text("X", x, y);
+    } else if (board[i].equals("O")) {
+      text("O", x, y);
     }
   }
 
@@ -54,98 +49,98 @@ void draw() {
   rect(width / 2 - 75, height - 75, 150, 50); // Button rectangle
   fill(0);
   textSize(20);
-  text("Reset", width / 2, height - 50); // Button text
+  text("Reset", width / 2, height - 50);
 
   // Check for a winner
-  int winner = checkWinner();
-  if (winner != 0) {
-    if (!gameOver) { // Update score only once
-      if (winner == 1) {
-        scoreX++; // Increment Player X's score
-      } else if (winner == 2) {
-        scoreO++; // Increment Player O's score
+  String winner = checkWinner();
+  if (!winner.equals("")) {
+    if (!gameOver) {
+      if (winner.equals("X")) {
+        scoreX++;
+      } else if (winner.equals("O")) {
+        scoreO++;
       }
-      gameOver = true; // Stop the game
+      gameOver = true;
     }
-    fill(255); // White text for winner message
+    fill(255);
     textSize(24);
     text("Player " + winner + " Wins!", width / 2, height - 150);
-    return; // Stop further drawing but allow interaction
+    return;
   } else if (isBoardFull()) {
-    if (!gameOver) { // Update tie count only once
-      tieCount++; // Increment tie count
-      gameOver = true; // Stop the game
+    if (!gameOver) {
+      tieCount++;
+      gameOver = true;
     }
-    fill(255); // White text for draw message
+    fill(255);
     textSize(24);
     text("It's a Draw!", width / 2, height - 150);
-    return; // Stop further drawing but allow interaction
+    return;
   }
 }
 
 void mousePressed() {
   // Check if the reset button is clicked
   if (mouseX > width / 2 - 75 && mouseX < width / 2 + 75 && mouseY > height - 75 && mouseY < height - 25) {
-    resetGame(); // Reset the game
+    resetGame();
     return;
   }
 
-  if (gameOver) return; // Prevent interaction if the game is over
+  if (gameOver) return;
 
   int col = mouseX / (width / 3);
-  int row = (mouseY - 50) / ((height - 150) / 3); // Adjust for scoreboard height
+  int row = (mouseY - 50) / ((height - 150) / 3);
+  int index = row * 3 + col;
 
-  if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == 0) {
-    board[row][col] = currentPlayer;
-    currentPlayer = currentPlayer == 1 ? 2 : 1; // Switch player
+  if (index >= 0 && index < 9 && board[index].equals("")) {
+    board[index] = currentPlayer == 1 ? "X" : "O";
+    currentPlayer = currentPlayer == 1 ? 2 : 1;
   }
 }
 
 void keyPressed() {
   if (key == 'R' || key == 'r') {
-    resetGame(); // Reset the game using the keyboard
+    resetGame();
   }
 }
 
 void resetGame() {
-  // Clear the board and reset variables
-  for (int row = 0; row < 3; row++) {
-    for (int col = 0; col < 3; col++) {
-      board[row][col] = 0;
-    }
+  for (int i = 0; i < 9; i++) {
+    board[i] = "";
   }
-  currentPlayer = 1; // Reset to Player X
+  currentPlayer = 1;
   gameOver = false;
 }
 
-int checkWinner() {
-  // Check rows and columns
+String checkWinner() {
+  // Check rows
   for (int i = 0; i < 3; i++) {
-    if (board[i][0] != 0 && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-      return board[i][0];
+    if (!board[i * 3].equals("") && board[i * 3].equals(board[i * 3 + 1]) && board[i * 3 + 1].equals(board[i * 3 + 2])) {
+      return board[i * 3];
     }
-    if (board[0][i] != 0 && board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
-      return board[0][i];
+  }
+
+  // Check columns
+  for (int i = 0; i < 3; i++) {
+    if (!board[i].equals("") && board[i].equals(board[i + 3]) && board[i + 3].equals(board[i + 6])) {
+      return board[i];
     }
   }
 
   // Check diagonals
-  if (board[0][0] != 0 && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-    return board[0][0];
+  if (!board[0].equals("") && board[0].equals(board[4]) && board[4].equals(board[8])) {
+    return board[0];
   }
-  if (board[0][2] != 0 && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-    return board[0][2];
+  if (!board[2].equals("") && board[2].equals(board[4]) && board[4].equals(board[6])) {
+    return board[2];
   }
 
-  return 0; // No winner
+  return ""; // No winner
 }
 
 boolean isBoardFull() {
-  for (int row = 0; row < 3; row++) {
-    for (int col = 0; col < 3; col++) {
-      if (board[row][col] == 0) {
-        return false;
-      }
+  for (int i = 0; i < 9; i++) {
+    if (board[i].equals("")) {
+      return false;
     }
   }
   return true;
