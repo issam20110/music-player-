@@ -174,12 +174,19 @@ void mousePressed() {
   }
 }
 
+void keyPressed() {
+  // Check if the "R" key is pressed (case insensitive)
+  if (key == 'R' || key == 'r') {
+    resetGame(); // Call the resetGame() function
+  }
+}
+
 void resetGame() {
   for (int i = 0; i < 9; i++) {
-    board[i] = "";
+    board[i] = ""; // Clear the board
   }
-  currentPlayer = 1;
-  gameOver = false;
+  currentPlayer = 1; // Reset to Player X
+  gameOver = false; // Reset game over flag
 }
 
 String checkWinner() {
